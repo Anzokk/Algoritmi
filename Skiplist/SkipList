@@ -1,0 +1,77 @@
+ Preudo codice da tradurre
+----
+
+
+#define MAX_HEIGHT ....
+
+typedef struct _SkipList SkipList;
+typedef struct _Node Node;
+
+struct _SkipList {
+  Node *head;
+  unsigned int max_level;
+  int (*compare)(void*, void*);
+};
+
+struct _Node {
+  Node **next;
+  unsigned int size;
+  void *item;
+};
+
+
+-----
+
+
+insertSkipList(list, I)
+
+    new = createNode(I, randomLevel())
+    if new->size > list->max_level
+        list->max_level = new->size
+
+    x = list->head
+    for k = list->max_level downto 1 do
+        if (x->next[k] == NULL || I < x->next[k]->item)
+            if k < new->size {
+              new->next[k] = x->next[k]
+              x->next[k] = new
+            }
+        else
+            x = x->next[k]
+
+
+
+----
+
+
+
+randomLevel()
+    lvl = 1
+
+    // random() returns a random value in [0...1)
+    while random() < 0.5 and lvl < MAX_HEIGHT do
+        lvl = lvl + 1
+    return lvl
+
+
+
+
+----
+
+
+
+
+searchSkipList(list, I)
+    x = list->head
+
+    // loop invariant: x->item < I
+    for i = list->max_level downto 1 do
+        while x->next[i]->item < I do
+            x = x->next[i]
+
+    // x->item < I <= x->next[1]->item
+    x = x->next[1]
+    if x->item == item then
+        return x->item
+    else
+        return failure
